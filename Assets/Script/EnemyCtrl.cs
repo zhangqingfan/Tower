@@ -114,7 +114,7 @@ public class EnemyCtrl : MonoBehaviour
             towerCtrl.ChangeHP(-5);
                         
             GameManager.instance.RemoveEnemy(enemyID);
-            StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject, 0f));
+            StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject));
         }
     }
 

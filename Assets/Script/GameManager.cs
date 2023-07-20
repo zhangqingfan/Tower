@@ -159,7 +159,7 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < enemyCtrlList.Count; i++)
         {
             var enemyCtrl = enemyCtrlList[i].GetComponent<EnemyCtrl>();
-            StartCoroutine(RealseObj(enemyCtrl.enemyName, enemyCtrlList[i], 0f));
+            StartCoroutine(RealseObj(enemyCtrl.enemyName, enemyCtrlList[i]));
         }
     }
 
@@ -289,12 +289,13 @@ public class GameManager : MonoBehaviour
         return obj;
     }
 
-    public IEnumerator RealseObj(string path, GameObject obj, float time = 0f)
+    public IEnumerator RealseObj(string path, GameObject obj, float time = -1f)
     {
         if (gameObjPool.ContainsKey(path) == false)
             yield break;
 
-        yield return new WaitForSeconds(time);
+        if(time > 0)
+            yield return new WaitForSeconds(time);
 
         obj.SetActive(false);
         gameObjPool[path].Add(obj);
