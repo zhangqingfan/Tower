@@ -13,7 +13,7 @@ public class TowerCtrl : MonoBehaviour
     public float recentFireTime;
 
     private GameObject bulletStartPos;
-    private TowerStats stats;
+    public TowerStats stats;
 
     private void Awake()
     {
@@ -85,8 +85,8 @@ public class TowerCtrl : MonoBehaviour
                 continue;
 
             //todo...bug!!
-            var results = Physics.OverlapSphere(bulletStartPos.transform.position, stats.GetValue(TowerStatsType.FireRange), LayerMask.GetMask("Enemy"));
-            
+            var results = Physics.OverlapSphere(bulletStartPos.transform.position, stats.GetValue(TowerStatsType.FireRange), LayerMask.GetMask("Enemy")); //LayerToName
+
             float minDistance = 999999;
             for (int i = 0; i < results.Length; i++)
             {
@@ -105,6 +105,20 @@ public class TowerCtrl : MonoBehaviour
                 ProjectSelectWheel();
             }
         }
+    }
+
+    public void ChangeHP(int value)
+    {
+        var hp = stats.GetValue(TowerStatsType.Health);
+        hp += value;
+        hp = Mathf.Clamp(hp, 0, stats.GetValue(TowerStatsType.MaxHealth));
+        stats.SetValue(TowerStatsType.Health, hp);
+
+        var bottomUI = (BottomUI)UICtrl.instance.GetUI("BottomUI");
+        bottomUI.SyncTowerStats(ID);
+
+        if (hp == 0)
+            this.gameObject.SetActive(false);
     }
 
     public IEnumerator AimingEnemy()
@@ -177,8 +191,20 @@ public class TowerCtrl : MonoBehaviour
     //增加navemesh X
     //增加投影选择栏 X
     //增加NPC瞄准投影 X
-    //增加UI栏属性对应
     //增加dodge类型的NPC X
-    //增加AI
-    //增加锁定NPC功能
+    //增加闪避AI X
+    //增加锁定NPC功能 X
+    //修改摄像机和屏幕长宽 X
+    //增加UI栏属性对应 X
+    //增加怪物属性 X
+    //增加速度怪物 X
+    //增加繁殖AI 
+    //增加繁殖NPC
+    //增加属性升级面板 
+    //增加胜负条件 X
+    //增加怪物波次概念 X
+    //增加塔死亡逻辑 X
+    //增加怪物死亡逻辑
+    //调整数值
+    //增加全屏幕大招
 }

@@ -31,9 +31,33 @@ public class GameManager : MonoBehaviour
     public int currentSelectTowerIndex = -1;
     public static GameManager instance { get; private set; }
 
+    public EnemyWaveData waveData;
+
+    private int currentWave = 0;
+    Coroutine countDownCoroutine;
+
     private void Awake()
     {
         instance = this;
+    }
+
+    void Start()
+    {
+        var selectWheel = Resources.Load<Sprite>("Material/SelectWheel");
+        //Debug.Log(selectWheel);
+
+        for (int i = 0; i < towerSpawnPos.Length; i++)
+        {
+            var go = GetInstance("Prefab/Tower", towerSpawnPos[i].position);
+            go.GetComponent<TowerCtrl>().selfColor = towerColor[i];
+            go.GetComponent<TowerCtrl>().SetTowerColor(towerColor[i], selectWheel);
+            go.GetComponent<TowerCtrl>().ID = i;
+
+            towerCtrlList.Add(go.GetComponent<TowerCtrl>());
+        }
+
+        StartCoroutine(TryEndGame());
+        StartCoroutine(TryCountDown());
     }
 
     private void Update()
@@ -63,36 +87,80 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Start()
+    public IEnumerator TryEndGame()
     {
-        var selectWheel = Resources.Load<Sprite>("Material/SelectWheel");
-        //Debug.Log(selectWheel);
-
-        for (int i = 0; i < towerSpawnPos.Length; i++)
+        var delay = new WaitForSeconds(1f);
+        
+        while (true)
         {
-            var go = GetInstance("Prefab/Tower", towerSpawnPos[i].position);
-            go.GetComponent<TowerCtrl>().selfColor = towerColor[i];
-            go.GetComponent<TowerCtrl>().SetTowerColor(towerColor[i], selectWheel);
-            go.GetComponent<TowerCtrl>().ID = i;
+            yield return delay;
 
-            towerCtrlList.Add(go.GetComponent<TowerCtrl>());
+            if (IsAllTowerDestory() == true)
+            {
+                yield return delay;
+                yield return delay;
+
+                var upUI = (UpUI)UICtrl.instance.GetUI("UpUI");
+                upUI.ShowEnd(false);
+                yield break;
+            }
+
+            if(enemyDict.Count == 0 && currentWave >= waveData.waveInfo.Count)
+            {
+                yield return delay;
+                yield return delay;
+
+                var upUI = (UpUI)UICtrl.instance.GetUI("UpUI");
+                upUI.ShowEnd(true);
+                yield break;
+            }
         }
+    }
 
-        //TODO...BUG!!!!!
-        for (int i = 0; i < 1; i++)
+    public IEnumerator TryCountDown()
+    {
+        var delay = new WaitForSeconds(1f);
+
+        while(true)
         {
-            var go = SpawnEnemy();
+            yield return delay;
 
-            var currentID = enemyID++;
-            go.GetComponent<EnemyCtrl>().enemyID = currentID;
-            go.GetComponent<EnemyCtrl>().StartAllCoroutine();
-            enemyDict[currentID] = go;
+            if (enemyDict.Count != 0)
+                continue;
+
+            if (currentWave >= waveData.waveInfo.Count)
+                yield break;
+
+            yield return delay;
+            yield return delay;
+
+            var upUI = (UpUI)UICtrl.instance.GetUI("UpUI");
+
+            for (int countDownTime = 5; countDownTime >= 0; countDownTime--)
+            {
+                upUI.ShowCountDown(countDownTime, true);
+                yield return new WaitForSeconds(1f);
+            }
+
+            upUI.ShowCountDown(-1, false);
+            GenerateEnemyWave();
         }
     }
 
     public void RemoveEnemy(int id)
     {
-        enemyDict.Remove(id);
+        if(enemyDict.ContainsKey(id) == true)
+            enemyDict.Remove(id);
+    }
+
+    public void ClearAllEnemy()
+    {
+        var enemyCtrlList = new List<GameObject>(enemyDict.Values);
+        for(int i = 0; i < enemyCtrlList.Count; i++)
+        {
+            var enemyCtrl = enemyCtrlList[i].GetComponent<EnemyCtrl>();
+            StartCoroutine(RealseObj(enemyCtrl.enemyName, enemyCtrlList[i], 0f));
+        }
     }
 
     public GameObject GetEnemy(int id)
@@ -125,6 +193,9 @@ public class GameManager : MonoBehaviour
             currentSelectTowerIndex = index;
             tower.ProjectSelectWheel();
         }
+
+        var bottomUI = (BottomUI)UICtrl.instance.GetUI("BottomUI");
+        bottomUI.SyncTowerStats(index);
     }
 
     GameObject SelectEnemy()
@@ -140,7 +211,7 @@ public class GameManager : MonoBehaviour
         return hit.collider.transform.gameObject;
     }
 
-    bool IsAllTowerDestory()
+    public bool IsAllTowerDestory()
     {
         foreach (var t in towerCtrlList)
         {
@@ -171,40 +242,31 @@ public class GameManager : MonoBehaviour
         return !towerCtrlList[index].gameObject.activeSelf;
     }
 
-    GameObject SpawnEnemy()
+    bool GenerateEnemyWave()
     {
-        var index = Random.Range(0, enemySpawnPos.Length);
-        var type = Random.Range((int)EnemyType.Speed, (int)EnemyType.Child);
+        if (currentWave >= waveData.waveInfo.Count)
+            return false;
 
-        string prefabPath;
-        switch (type)
+        var info = waveData.waveInfo[currentWave];
+        for (int i = 0; i < info.enemyNameList.Count; i++)
         {
-            case (int)EnemyType.Normal:
-                prefabPath = "Prefab/EnemyNormal";
-                break;
+            var prefabPath = "Prefab/" + info.enemyNameList[i].gameObject.name;
+            var index = Random.Range(0, enemySpawnPos.Length);
+            var type = Random.Range((int)EnemyType.Speed, (int)EnemyType.Child);
 
-            case (int)EnemyType.Speed:
-                prefabPath = "Prefab/EnemyNormal";
-                break;
+            var go = GetInstance(prefabPath, enemySpawnPos[index].position);
+            go.GetComponent<EnemyCtrl>().SetEnemyColor(enemyColor[(int)type]);
+            go.GetComponent<EnemyCtrl>().enemyName = prefabPath;
 
-            case (int)EnemyType.Dodge:
-                prefabPath = "Prefab/EnemyDodge";
-                break;
-
-            case (int)EnemyType.Spawn:
-                prefabPath = "Prefab/EnemyDodge";
-                break;
-
-            default:
-                prefabPath = "Prefab/EnemyNormal";
-                break;
+            var currentID = enemyID++;
+            go.GetComponent<EnemyCtrl>().enemyID = currentID;
+            go.GetComponent<EnemyCtrl>().StartAllCoroutine();
+            enemyDict[currentID] = go;
         }
         
-        var go = GetInstance(prefabPath, enemySpawnPos[index].position);
-        go.GetComponent<EnemyCtrl>().SetEnemyColor(enemyColor[(int)type]);
-        go.GetComponent<EnemyCtrl>().enemyName = prefabPath;
-
-        return go;
+        //TODO...BUG!!
+        currentWave = currentWave + 1;
+        return true;
     }
 
     public GameObject GetInstance(string path, Vector3 pos)
