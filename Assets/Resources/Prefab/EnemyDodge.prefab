@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 9137934759283942833}
   - component: {fileID: 9137934759283942834}
   - component: {fileID: 9137934759283942835}
-  - component: {fileID: 9137934759283942832}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: EnemyBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,20 +81,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &9137934759283942832
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9137934759283942846}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &9137934759317931569
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyID: -1
-  speed: 0
+  baseSpeed: 0.1
   targetTowerIndex: -1
   enemyName: 
   projector: {fileID: 0}
@@ -225,7 +210,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9137934760087097052}
   - component: {fileID: 9137934760087097055}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Projector
   m_TagString: Untagged
   m_Icon: {fileID: 0}

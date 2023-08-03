@@ -55,7 +55,7 @@ public class DodgeAI : MonoBehaviour
 
     private void OnDisable()
     {
-        dodgeTime = 5;
+        dodgeTime = 15;
     }
 
     private void OnEnable()

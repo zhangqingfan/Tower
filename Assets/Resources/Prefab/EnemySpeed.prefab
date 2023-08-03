@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 639214969709075511}
   - component: {fileID: 639214969709075514}
   - component: {fileID: 639214969709075509}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: EnemyBody0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 639214969709075510}
   m_LocalRotation: {x: 0, y: 0.2588191, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: -0.028100383, y: 0.065, z: 0.005000174}
-  m_LocalScale: {x: 0.01, y: 0.13, z: 0.13}
+  m_LocalPosition: {x: -0.028100383, y: 0.0681, z: 0.005000174}
+  m_LocalScale: {x: 0.03, y: 0.13, z: 0.13}
   m_Children: []
   m_Father: {fileID: 639214970390088129}
   m_RootOrder: 0
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 639214969922593414}
   - component: {fileID: 639214969922593413}
   - component: {fileID: 639214969922593412}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: EnemyBody1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,8 +107,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 639214969922593409}
   m_LocalRotation: {x: 0, y: -0.258819, z: 0, w: 0.9659259}
-  m_LocalPosition: {x: 0.0339, y: 0.065, z: 0.005}
-  m_LocalScale: {x: 0.01, y: 0.13, z: 0.13}
+  m_LocalPosition: {x: 0.0339, y: 0.0681, z: 0.005}
+  m_LocalScale: {x: 0.03, y: 0.13, z: 0.13}
   m_Children: []
   m_Father: {fileID: 639214970390088129}
   m_RootOrder: 1
@@ -223,7 +223,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 639214970390088128}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.13, y: 0.13, z: 0.13}
@@ -263,7 +263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyID: -1
-  speed: 0
+  baseSpeed: 0.1
   targetTowerIndex: -1
   enemyName: 
   projector: {fileID: 0}
@@ -278,7 +278,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5337010821645462692}
   - component: {fileID: 2752977729373485068}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Projector
   m_TagString: Untagged
   m_Icon: {fileID: 0}

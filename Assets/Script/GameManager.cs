@@ -58,6 +58,8 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine(TryEndGame());
         StartCoroutine(TryCountDown());
+
+        SelectTower(0);
     }
 
     private void Update()
@@ -75,13 +77,13 @@ public class GameManager : MonoBehaviour
             SelectTower(3);
 
         var currentSelectTower = GetTower(currentSelectTowerIndex);
-        if(currentSelectTower != null)
+        if (currentSelectTower != null)
         {
             var enemy = SelectEnemy();
-            if(enemy != null)
+            if (enemy != null)
             {
                 currentSelectTower.UnProjectSelectWheel();
-                currentSelectTower.selectEnemyID = enemy.GetComponent<EnemyCtrl>().enemyID;
+                currentSelectTower.AddSelectEnemy(enemy.GetComponent<EnemyCtrl>().enemyID);
                 currentSelectTower.ProjectSelectWheel();
             }
         }
@@ -90,7 +92,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator TryEndGame()
     {
         var delay = new WaitForSeconds(1f);
-        
+
         while (true)
         {
             yield return delay;
@@ -105,7 +107,7 @@ public class GameManager : MonoBehaviour
                 yield break;
             }
 
-            if(enemyDict.Count == 0 && currentWave >= waveData.waveInfo.Count)
+            if (enemyDict.Count == 0 && currentWave >= waveData.waveInfo.Count)
             {
                 yield return delay;
                 yield return delay;
@@ -121,7 +123,7 @@ public class GameManager : MonoBehaviour
     {
         var delay = new WaitForSeconds(1f);
 
-        while(true)
+        while (true)
         {
             yield return delay;
 
@@ -149,14 +151,14 @@ public class GameManager : MonoBehaviour
 
     public void RemoveEnemy(int id)
     {
-        if(enemyDict.ContainsKey(id) == true)
+        if (enemyDict.ContainsKey(id) == true)
             enemyDict.Remove(id);
     }
 
     public void ClearAllEnemy()
     {
         var enemyCtrlList = new List<GameObject>(enemyDict.Values);
-        for(int i = 0; i < enemyCtrlList.Count; i++)
+        for (int i = 0; i < enemyCtrlList.Count; i++)
         {
             var enemyCtrl = enemyCtrlList[i].GetComponent<EnemyCtrl>();
             StartCoroutine(RealseObj(enemyCtrl.enemyName, enemyCtrlList[i]));
@@ -183,19 +185,20 @@ public class GameManager : MonoBehaviour
 
     void SelectTower(int index)
     {
+        var tower = GetTower(index);
+        if (tower == null)
+            return;
+
         var currentSelectTower = GetTower(currentSelectTowerIndex);
         if (currentSelectTower != null)
             currentSelectTower.UnProjectSelectWheel();
 
-        var tower = GetTower(index);
-        if (tower != null)
-        {
-            currentSelectTowerIndex = index;
-            tower.ProjectSelectWheel();
-        }
-
+        currentSelectTowerIndex = index;
+        tower.ProjectSelectWheel();
+        
         var bottomUI = (BottomUI)UICtrl.instance.GetUI("BottomUI");
         bottomUI.SyncTowerStats(index);
+        bottomUI.SyncTowerUpgrade(index);
     }
 
     GameObject SelectEnemy()
@@ -250,23 +253,34 @@ public class GameManager : MonoBehaviour
         var info = waveData.waveInfo[currentWave];
         for (int i = 0; i < info.enemyNameList.Count; i++)
         {
-            var prefabPath = "Prefab/" + info.enemyNameList[i].gameObject.name;
             var index = Random.Range(0, enemySpawnPos.Length);
-            var type = Random.Range((int)EnemyType.Speed, (int)EnemyType.Child);
+            var pos = enemySpawnPos[index].position; //TODO...BUG
+            //Debug.Log(pos);
+            var prefabPath = "Prefab/" + info.enemyNameList[i].gameObject.name;
 
-            var go = GetInstance(prefabPath, enemySpawnPos[index].position);
-            go.GetComponent<EnemyCtrl>().SetEnemyColor(enemyColor[(int)type]);
-            go.GetComponent<EnemyCtrl>().enemyName = prefabPath;
-
-            var currentID = enemyID++;
-            go.GetComponent<EnemyCtrl>().enemyID = currentID;
-            go.GetComponent<EnemyCtrl>().StartAllCoroutine();
-            enemyDict[currentID] = go;
+            Debug.Log(index);
+            CreateEnemy(prefabPath, pos);
         }
-        
+
         //TODO...BUG!!
         currentWave = currentWave + 1;
         return true;
+    }
+
+    public void CreateEnemy(string prefabPath, Vector3 position)
+    {
+        var type = Random.Range((int)EnemyType.Speed, (int)EnemyType.Child);
+
+        var go = GetInstance(prefabPath, position);
+        go.GetComponent<EnemyCtrl>().SetEnemyColor(enemyColor[(int)type]);
+        go.GetComponent<EnemyCtrl>().enemyName = prefabPath;
+
+        var currentID = enemyID++;
+        go.GetComponent<EnemyCtrl>().enemyID = currentID;
+        go.GetComponent<EnemyCtrl>().StartAllCoroutine();
+        enemyDict[currentID] = go;
+
+        Debug.Log(go.transform.position);
     }
 
     public GameObject GetInstance(string path, Vector3 pos)
@@ -294,10 +308,37 @@ public class GameManager : MonoBehaviour
         if (gameObjPool.ContainsKey(path) == false)
             yield break;
 
-        if(time > 0)
+        if (time > 0)
             yield return new WaitForSeconds(time);
 
         obj.SetActive(false);
         gameObjPool[path].Add(obj);
+    }
+
+    public void RepairAllTowers()
+    {
+        for(int i = 0; i < towerCtrlList.Count; i++)
+        {
+            if(towerCtrlList[i].gameObject.activeSelf == true)
+            {
+                var maxHp = towerCtrlList[i].stats.GetValue(TowerStatsType.MaxHealth);
+                towerCtrlList[i].stats.SetValue(TowerStatsType.Health, maxHp);
+
+                var bottomUI = (BottomUI)UICtrl.uiDict["BottomUI"];
+                bottomUI.SyncTowerStats(i);
+
+                var effect = GetInstance("Prefab/Star_A", towerCtrlList[i].transform.position);
+                StartCoroutine(RealseObj("Prefab/Star_A", effect, 0.5f));
+            }
+        }
+    }
+
+    public void ChangeAllEnemySpeed(float speedRatio)
+    {
+        foreach(var pair in enemyDict)
+        {
+            var enemyCtrl = pair.Value.GetComponent<EnemyCtrl>();
+            enemyCtrl.agent.speed = enemyCtrl.baseSpeed * speedRatio;
+        }
     }
 }

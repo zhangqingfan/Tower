@@ -10,15 +10,15 @@ public class UpUI : UICtrl
     {
         base.Awake();
         uiDict["UpUI"] = this;
-    }
-    
-    void Start()
-    {
+
         ChangeText("Gold", "Gold: ");
         elemDict["EndText"].SetActive(false);
         elemDict["CountDown"].SetActive(false);
+        elemDict["FreezeTime"].SetActive(false);
 
         AddButtonListener("SceneSkill/SkillButton0", () => ButtonFunction(0));
+        AddButtonListener("SceneSkill/SkillButton1", () => ButtonFunction(1));
+        AddButtonListener("SceneSkill/SkillButton2", () => ButtonFunction(2));
     }
 
     public void ShowEnd(bool isWin)
@@ -37,28 +37,77 @@ public class UpUI : UICtrl
 
     void ButtonFunction(int index)
     {
-        Debug.Log(index);
+        //Debug.Log(index);
         if(index == 0)
         {
+            var image = elemDict["SceneSkill/SkillButton0/SkillImage"].GetComponent<Image>();
+            if (image.fillAmount < 1.0f)
+                return;
+
             StartCoroutine(ClearAllEnemy());
-            StartCoroutine(StartCoolDown());
+            StartCoroutine(StartCoolDown(image, 3f));
+            return;
+        }
+
+        if(index == 1)
+        {
+            var image = elemDict["SceneSkill/SkillButton1/SkillImage"].GetComponent<Image>();
+            if (image.fillAmount < 1.0f)
+                return;
+
+            StartCoroutine(ChangeEnemySpeed());
+            StartCoroutine(StartCoolDown(image, 3f));
+            return;
+        }
+
+        if(index == 2)
+        {
+            var image = elemDict["SceneSkill/SkillButton2/SkillImage"].GetComponent<Image>();
+            if (image.fillAmount < 1.0f)
+                return;
+
+            GameManager.instance.RepairAllTowers();
+            StartCoroutine(StartCoolDown(image, 3f));
             return;
         }
     }
 
-    public IEnumerator StartCoolDown()
+    public IEnumerator ChangeEnemySpeed()
     {
-        var image = elemDict["SceneSkill/SkillButton0/SkillImage"].GetComponent<Image>();
+        GameManager.instance.ChangeAllEnemySpeed(0.5f);
 
-        var delay = new WaitForSeconds(0.1f);
+        elemDict["FreezeTime"].SetActive(true);
+        
+        for (int countDownTime = 3; countDownTime >= 0; countDownTime--)
+        {
+            ChangeText("FreezeTime", "Freezing: " + countDownTime);
+            yield return new WaitForSeconds(1f);
+        }
+        
+        elemDict["FreezeTime"].SetActive(false);
+        
+        GameManager.instance.ChangeAllEnemySpeed(1f);
+    }
 
-        yield break;
+    public IEnumerator StartCoolDown(Image image, float cdTime)
+    {
+        image.fillAmount = 0;
+
+        var deltaTime = 0.05f;
+        var delay = new WaitForSeconds(deltaTime);
+        var loopTime = Mathf.Ceil(cdTime / deltaTime) ;
+
+        for (float i = 0; i <= loopTime; i++)
+        {
+            image.fillAmount = i / loopTime;
+            yield return delay;
+        }
     }
 
     public IEnumerator ClearAllEnemy()
     {
-        var delay = new WaitForSeconds(1f);
-        yield return delay;
+        //var delay = new WaitForSeconds(1f);
+        //yield return delay;
 
         float shakeTime = 2.0f;
         float shakeAmount = 2.0f;
@@ -83,7 +132,5 @@ public class UpUI : UICtrl
             yield return null;
             Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, originalPos, Time.deltaTime * shakeSpeed * 2);
         }
-
-        
     }
 }

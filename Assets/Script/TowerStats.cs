@@ -19,6 +19,7 @@ public enum TowerStatsType
 public class TowerStats : MonoBehaviour
 {
     public float[] stats = new float[(int)TowerStatsType.TypeMax] { 1f, 1f, 20f, 5.0f, 1.6f, 1f, 1f, 5.0f };
+    public int[] statsUpGrade = new int[(int)TowerStatsType.TypeMax] { 0, 0, 0, 0, 0, 0, 0, 0 };
 
     public void SetValue(TowerStatsType type, float value)
     {
@@ -34,5 +35,61 @@ public class TowerStats : MonoBehaviour
             return -1;
 
         return stats[(int)type];
+    }
+
+    public int GetUpgradeValue(TowerStatsType type)
+    {
+        if (type >= TowerStatsType.TypeMax)
+            return -1;
+
+        return statsUpGrade[(int)type];
+    }
+
+    public void UpgradeStats(TowerStatsType type)
+    {
+        int value = statsUpGrade[(int)type];
+
+        switch (type)
+        {
+        case TowerStatsType.CD:
+            if(value < 3)
+            {
+                    statsUpGrade[(int)type] += 1;
+                    stats[(int)type] -= 0.2f ;
+                }
+            break;
+
+         case TowerStatsType.RotationSpeed:
+            if (value < 3)
+            {
+                    statsUpGrade[(int)type] += 1;
+                    stats[(int)type] += 30f;
+                }
+            break;
+
+        case TowerStatsType.MaxHealth:
+                if (value < 1)
+                {
+                    statsUpGrade[(int)type] += 1;
+                    stats[(int)type] += 1f;
+                }
+                break;
+
+         case TowerStatsType.FireRange:
+                if (value < 3)
+                {
+                    statsUpGrade[(int)type] += 1;
+                    stats[(int)type] += 0.4f;
+                }
+                break;
+
+         case TowerStatsType.TargetsNum:
+                if (value < 1)
+                {
+                    statsUpGrade[(int)type] += 1;
+                    stats[(int)type] += 1;
+                }
+                break;
+        }
     }
 }

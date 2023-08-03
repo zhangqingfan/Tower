@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class TowerCtrl : MonoBehaviour
 {
+    [HideInInspector]
+    //public int selectEnemyID = -1;
+    public List<int> selectEnemyList = new List<int>();
+
     public int ID;
     public Color selfColor;
-    public int selectEnemyID = -1;
 
     public Projector projector;
     public Material projectorMat;
@@ -22,13 +25,13 @@ public class TowerCtrl : MonoBehaviour
         
         var shader = Shader.Find("Unlit/ProjectorShader");
         projectorMat = new Material(shader);
+
+        stats = transform.GetComponentInChildren<TowerStats>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        stats = transform.GetComponentInChildren<TowerStats>();
-
         StartCoroutine(DetectEnemy());
         StartCoroutine(AimingEnemy());
         StartCoroutine(TryShooting());
@@ -50,13 +53,34 @@ public class TowerCtrl : MonoBehaviour
         projector.material = projectorMat;
     }
 
+    public void AddSelectEnemy(int enemyID)
+    {
+        var enemy = GameManager.instance.GetEnemy(enemyID);
+        if (enemy == null)
+            return;
+
+        for (int i = selectEnemyList.Count - 1; i >= 0; i--)
+        {
+            if (GameManager.instance.GetEnemy(selectEnemyList[i]) == null)
+                selectEnemyList.RemoveAt(i);
+        }
+
+        if (selectEnemyList.Count >= stats.GetValue(TowerStatsType.TargetsNum))
+            selectEnemyList.RemoveAt(0);
+
+        selectEnemyList.Insert(0, enemyID);
+    }
+
     public void UnProjectSelectWheel()
     {
         projector.enabled = false;
 
-        var currentSelectEnemy = GameManager.instance.GetEnemy(selectEnemyID);
-        if (currentSelectEnemy != null)
-            currentSelectEnemy.GetComponent<EnemyCtrl>().projector.enabled = false;
+        foreach(var elem in selectEnemyList)
+        {
+            var currentSelectEnemy = GameManager.instance.GetEnemy(elem);
+            if (currentSelectEnemy != null)
+                currentSelectEnemy.GetComponent<EnemyCtrl>().projector.enabled = false;
+        }
     }
 
     public void ProjectSelectWheel()
@@ -64,42 +88,62 @@ public class TowerCtrl : MonoBehaviour
         projector.enabled = true;
         projector.material = projectorMat;
 
-        var enemy = GameManager.instance.GetEnemy(selectEnemyID);
-        if (enemy != null)
+        foreach (var elem in selectEnemyList)
         {
-            enemy.GetComponent<EnemyCtrl>().projector.enabled = true;
-            enemy.GetComponent<EnemyCtrl>().projector.material = projectorMat;
+            var enemy = GameManager.instance.GetEnemy(elem);
+            if (enemy != null)
+            {
+                enemy.GetComponent<EnemyCtrl>().projector.enabled = true;
+                enemy.GetComponent<EnemyCtrl>().projector.material = projectorMat;
+            }
         }
     }
 
     public IEnumerator DetectEnemy()
     {
-        var delay = new WaitForSeconds(0.5f); 
+        var delay = new WaitForSeconds(0.2f); 
 
         while (true)
         {
             yield return delay;
 
-            var targetObj = GameManager.instance.GetEnemy(selectEnemyID);
-            if (targetObj != null)
+            if (selectEnemyList.Count != 0)
+            {
+                var enemy = GameManager.instance.GetEnemy(selectEnemyList[0]);
+                if (enemy == null)
+                    selectEnemyList.RemoveAt(0);
+                    
                 continue;
+            }
 
-            //todo...bug!!
-            var results = Physics.OverlapSphere(bulletStartPos.transform.position, stats.GetValue(TowerStatsType.FireRange), LayerMask.GetMask("Enemy")); //LayerToName
-
+            var results = Physics.OverlapSphere(transform.position, stats.GetValue(TowerStatsType.FireRange), LayerMask.GetMask("Enemy")); //LayerToName
+           
+            EnemyCtrl enemyCtrl = null;
             float minDistance = 999999;
+            
             for (int i = 0; i < results.Length; i++)
             {
                 var distance = Vector3.Distance(transform.position, results[i].gameObject.transform.position);
                 if (distance < minDistance)
                 {
                     minDistance = distance;
-                    //Debug.Log(results[i].gameObject.GetComponent<EnemyCtrl>());
-                    selectEnemyID = results[i].gameObject.GetComponent<EnemyCtrl>().enemyID; //TODO BUG!!!
+
+                    enemyCtrl = results[i].gameObject.GetComponent<EnemyCtrl>();
+                    if(enemyCtrl == null)
+                    {
+                        Debug.Log(results[i].gameObject);
+                        Debug.Log("null!!");
+                        continue;
+                    }
                 }
             }
 
-            if(GameManager.instance.currentSelectTowerIndex == ID)
+            if (enemyCtrl == null)
+                continue;
+
+            selectEnemyList.Insert(0, enemyCtrl.enemyID);
+
+            if (GameManager.instance.currentSelectTowerIndex == ID)
             {
                 UnProjectSelectWheel();
                 ProjectSelectWheel();
@@ -129,7 +173,10 @@ public class TowerCtrl : MonoBehaviour
         {
             yield return null;
 
-            var targetObj = GameManager.instance.GetEnemy(selectEnemyID);
+            if (selectEnemyList.Count == 0)
+                continue;
+
+            var targetObj = GameManager.instance.GetEnemy(selectEnemyList[0]);
             if (targetObj == null)
                 continue;
 
@@ -152,7 +199,10 @@ public class TowerCtrl : MonoBehaviour
         {
             yield return delay;
 
-            var targetObj = GameManager.instance.GetEnemy(selectEnemyID);
+            if (selectEnemyList.Count == 0)
+                continue;
+
+            var targetObj = GameManager.instance.GetEnemy(selectEnemyList[0]);
             if (targetObj == null)
                 continue;
 

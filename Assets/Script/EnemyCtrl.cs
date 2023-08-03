@@ -5,10 +5,22 @@ using UnityEngine.AI;
 
 public class EnemyCtrl : MonoBehaviour
 {
+    [HideInInspector]
     public int enemyID = -1;
-    public float speed = 0f;
+    
+    [HideInInspector]
+    public float baseSpeed = 0.1f;
+    
+    [HideInInspector]
     public int targetTowerIndex = -1;
+    
+    [HideInInspector]
     public string enemyName;
+
+    [HideInInspector]
+    public int originalHp = 10;
+
+    private int currentHp = 0;
 
     public Projector projector;
     public NavMeshAgent agent;
@@ -20,7 +32,7 @@ public class EnemyCtrl : MonoBehaviour
         projector = transform.GetComponentInChildren<Projector>();
         
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = 0.1f;
+        //agent.speed = baseSpeed;
         agent.stoppingDistance = 0.01f;
         agent.angularSpeed = 0f;
         agent.acceleration = 600f;
@@ -31,10 +43,10 @@ public class EnemyCtrl : MonoBehaviour
     private void Start()
     {
         if (enemyName == "Prefab/EnemySpeed")
-        {
-            agent.speed *= 5;
-            Debug.Log("123123");
-        }
+            baseSpeed *= 5;
+        
+        agent.speed = baseSpeed;
+        currentHp = originalHp;
     }
 
     public IEnumerator Move()
@@ -99,10 +111,10 @@ public class EnemyCtrl : MonoBehaviour
     private void OnDisable()
     {
         GameManager.instance.RemoveEnemy(enemyID);
-        //Debug.Log("1231232");
         targetTowerIndex = -1;
         enemyID = -1;
         projector.enabled = false;
+        currentHp = originalHp;
     }
 
     void OnTriggerEnter(Collider other)
@@ -113,9 +125,18 @@ public class EnemyCtrl : MonoBehaviour
             var towerCtrl = other.gameObject.GetComponent<TowerCtrl>();
             towerCtrl.ChangeHP(-5);
                         
-            GameManager.instance.RemoveEnemy(enemyID);
+            //GameManager.instance.RemoveEnemy(enemyID);
             StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject));
         }
+    }
+
+    public void OnHit(int damage)
+    {
+        currentHp += damage;
+        currentHp = (currentHp >= 0 ? currentHp : 0);
+
+        if (currentHp <= 0)
+            StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject));
     }
 
     public void TryWrap(Vector3 pos)
@@ -124,6 +145,7 @@ public class EnemyCtrl : MonoBehaviour
         agent.Warp(pos);
         agent.destination = currentDestination;
     }
+
     public void SetEnemyColor(Color color)
     {
         var meshRenderList = GetComponentsInChildren<MeshRenderer>();

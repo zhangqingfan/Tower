@@ -14,10 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveInfo:
   - enemyNameList:
+    - {fileID: 4408956718189052269, guid: f86baf5a3a23bf944b2075550a1c9b15, type: 3}
+  - enemyNameList:
+    - {fileID: 6646012959936338444, guid: 82684ddc114a99d4fb385a936834cffb, type: 3}
+    - {fileID: 6646012959936338444, guid: 82684ddc114a99d4fb385a936834cffb, type: 3}
+    - {fileID: 6646012959936338444, guid: 82684ddc114a99d4fb385a936834cffb, type: 3}
+    - {fileID: 6646012959936338444, guid: 82684ddc114a99d4fb385a936834cffb, type: 3}
+    - {fileID: 6646012959936338444, guid: 82684ddc114a99d4fb385a936834cffb, type: 3}
+    - {fileID: 9137934759317931569, guid: d62d108810ebd864f9a85a2cbabdc3ee, type: 3}
+    - {fileID: 9137934759317931569, guid: d62d108810ebd864f9a85a2cbabdc3ee, type: 3}
     - {fileID: 639214970390088128, guid: 2edd3535c977a3c4caaca75646192868, type: 3}
-  - enemyNameList:
-    - {fileID: 9137934759317931569, guid: d62d108810ebd864f9a85a2cbabdc3ee, type: 3}
-    - {fileID: 9137934759317931569, guid: d62d108810ebd864f9a85a2cbabdc3ee, type: 3}
-  - enemyNameList:
+    - {fileID: 639214970390088128, guid: 2edd3535c977a3c4caaca75646192868, type: 3}
     - {fileID: 639214970390088128, guid: 2edd3535c977a3c4caaca75646192868, type: 3}
     - {fileID: 639214970390088128, guid: 2edd3535c977a3c4caaca75646192868, type: 3}

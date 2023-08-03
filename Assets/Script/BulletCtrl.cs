@@ -8,7 +8,7 @@ public class BulletCtrl : MonoBehaviour
     {
         if(other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            //Debug.Log("hit");
+            other.gameObject.GetComponent<EnemyCtrl>().OnHit(-1);
             gameObject.SetActive(false);
         }
     }

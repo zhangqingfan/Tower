@@ -99,13 +99,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dace01fd90b5f024ca10ffd2a330ef87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectEnemyList: 
   ID: 0
   selfColor: {r: 0, g: 0, b: 0, a: 1}
-  selectEnemyID: -1
-  shootRange: 1.6
-  rotateSpeed: 20
   projector: {fileID: 0}
   projectorMat: {fileID: 0}
+  recentFireTime: 0
+  stats: {fileID: 0}
 --- !u!65 &5323747678207607233
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -131,6 +131,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2402fff2ae88c44f96e26f7fbea8768, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stats:
+  - 1
+  - 1
+  - 20
+  - 5
+  - 1.6
+  - 1
+  - 1
+  - 5
+  statsUpGrade: 0000000000000000000000000000000000000000000000000000000000000000
 --- !u!1 &7062624347796579983
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,7 +152,7 @@ GameObject:
   - component: {fileID: 7062624347796579982}
   - component: {fileID: 7062624347796579979}
   - component: {fileID: 7062624347796579980}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +233,7 @@ GameObject:
   - component: {fileID: 7062624347976986123}
   - component: {fileID: 7062624347976986120}
   - component: {fileID: 7062624347976986121}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -302,7 +312,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7062624348608906603}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: FirePos
   m_TagString: Untagged
   m_Icon: {fileID: 0}

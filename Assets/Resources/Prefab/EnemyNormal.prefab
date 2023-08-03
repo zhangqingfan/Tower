@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 6646012959886299087}
   - component: {fileID: 6646012959886299084}
   - component: {fileID: 6646012959886299085}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: EnemyBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -180,10 +180,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyID: 0
-  speed: 1
+  baseSpeed: 0.1
   targetTowerIndex: -1
   enemyName: 
   projector: {fileID: 0}
+  agent: {fileID: 0}
 --- !u!54 &2582701213057928510
 Rigidbody:
   m_ObjectHideFlags: 0
