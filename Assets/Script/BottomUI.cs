@@ -73,5 +73,14 @@ public class BottomUI : UICtrl
         towerCtrl.stats.UpgradeStats(type);
         SyncTowerStats(towerIndex);
         SyncTowerUpgrade(towerIndex);
+
+        if (type == TowerStatsType.TargetsNum)
+        {
+            if (GameManager.instance.currentSelectTowerIndex == towerCtrl.ID)
+            {
+                towerCtrl.UnProjectSelectWheel();
+                towerCtrl.ProjectSelectWheel();
+            }
+        }
     }
 }

@@ -92,4 +92,38 @@ public class UICtrl : MonoBehaviour
 
         text.text = words;
     }
+
+    public void CheckToogle(string key, bool bo)
+    {
+        if (elemDict.ContainsKey(key) == false)
+        {
+            Debug.LogWarning("Can not find Text: " + key);
+            return;
+        }
+
+        var toggle = elemDict[key].GetComponent<Toggle>();
+        if (toggle == null)
+        {
+            Debug.LogWarning("Can not find Text: " + key);
+            return;
+        }
+        toggle.isOn = bo;
+    }
+
+    public bool GetToogleState(string key)
+    {
+        if (elemDict.ContainsKey(key) == false)
+        {
+            Debug.LogWarning("Can not find Text: " + key);
+            return false;
+        }
+
+        var toggle = elemDict[key].GetComponent<Toggle>();
+        if (toggle == null)
+        {
+            Debug.LogWarning("Can not find Text: " + key);
+            return false;
+        }
+        return toggle.isOn;
+    }
 }

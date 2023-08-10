@@ -24,9 +24,10 @@ public class GameManager : MonoBehaviour
     public List<TowerCtrl> towerCtrlList = new List<TowerCtrl>();
 
     private static int enemyID = 0;
-    private Dictionary<int, GameObject> enemyDict = new Dictionary<int, GameObject>();
+    public Dictionary<int, GameObject> enemyDict = new Dictionary<int, GameObject>();
 
     private Dictionary<string, List<GameObject>> gameObjPool = new Dictionary<string, List<GameObject>>();
+    public List<Sprite> selectNumList = new List<Sprite>();
 
     public int currentSelectTowerIndex = -1;
     public static GameManager instance { get; private set; }
@@ -39,12 +40,14 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        
+        selectNumList.Add(Resources.Load<Sprite>("Material/Select1"));
+        selectNumList.Add(Resources.Load<Sprite>("Material/Select2"));
     }
 
     void Start()
     {
         var selectWheel = Resources.Load<Sprite>("Material/SelectWheel");
-        //Debug.Log(selectWheel);
 
         for (int i = 0; i < towerSpawnPos.Length; i++)
         {
@@ -75,6 +78,18 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha4) == true)
             SelectTower(3);
+
+        if (Input.GetKeyDown(KeyCode.Q) == true)
+            ChageTowerPosition(0);
+
+        if (Input.GetKeyDown(KeyCode.W) == true)
+            ChageTowerPosition(1);
+
+        if (Input.GetKeyDown(KeyCode.E) == true)
+            ChageTowerPosition(2);
+
+        if (Input.GetKeyDown(KeyCode.R) == true)
+            ChageTowerPosition(3);
 
         var currentSelectTower = GetTower(currentSelectTowerIndex);
         if (currentSelectTower != null)
@@ -199,6 +214,40 @@ public class GameManager : MonoBehaviour
         var bottomUI = (BottomUI)UICtrl.instance.GetUI("BottomUI");
         bottomUI.SyncTowerStats(index);
         bottomUI.SyncTowerUpgrade(index);
+
+        var toggleUpgrade = bottomUI.GetToogleState("TabNode/Upgrade");
+        var toggleStat = bottomUI.GetToogleState("TabNode/Stat");
+
+        if(toggleStat == false && toggleUpgrade == false)
+            bottomUI.CheckToogle("TabNode/Upgrade", true);
+    }
+
+    void ChageTowerPosition(int index)
+    {
+        if (currentSelectTowerIndex < 0 || currentSelectTowerIndex >= towerCtrlList.Count)
+            return;
+
+        var temp = towerCtrlList[currentSelectTowerIndex];
+        towerCtrlList[currentSelectTowerIndex] = towerCtrlList[index];
+        towerCtrlList[index] = temp;
+
+        towerCtrlList[index].ID = index;
+        towerCtrlList[index].transform.position = towerSpawnPos[index].position;
+
+        towerCtrlList[currentSelectTowerIndex].ID = currentSelectTowerIndex;
+        towerCtrlList[currentSelectTowerIndex].transform.position = towerSpawnPos[currentSelectTowerIndex].position;
+
+        SelectTower(index);
+    }
+
+    public void RemoveTowersTargetingEnemy(int enemyID)
+    {
+        for(int i = 0; i < towerCtrlList.Count; i++)
+        {
+            var tower = GetTower(i);
+            if (tower != null)
+                tower.TryRemoveEnemy(enemyID);
+        }
     }
 
     GameObject SelectEnemy()
@@ -258,7 +307,7 @@ public class GameManager : MonoBehaviour
             //Debug.Log(pos);
             var prefabPath = "Prefab/" + info.enemyNameList[i].gameObject.name;
 
-            Debug.Log(index);
+            //Debug.Log(index);
             CreateEnemy(prefabPath, pos);
         }
 
@@ -280,7 +329,7 @@ public class GameManager : MonoBehaviour
         go.GetComponent<EnemyCtrl>().StartAllCoroutine();
         enemyDict[currentID] = go;
 
-        Debug.Log(go.transform.position);
+        //Debug.Log(go.transform.position);
     }
 
     public GameObject GetInstance(string path, Vector3 pos)

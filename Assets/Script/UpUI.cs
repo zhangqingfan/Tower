@@ -37,8 +37,13 @@ public class UpUI : UICtrl
 
     void ButtonFunction(int index)
     {
-        //Debug.Log(index);
-        if(index == 0)
+        if (GameManager.instance.enemyDict.Count == 0)
+            return;
+
+        if (GameManager.instance.IsAllTowerDestory() == true)
+            return;
+
+        if (index == 0)
         {
             var image = elemDict["SceneSkill/SkillButton0/SkillImage"].GetComponent<Image>();
             if (image.fillAmount < 1.0f)

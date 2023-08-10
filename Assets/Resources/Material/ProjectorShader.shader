@@ -19,8 +19,7 @@ Shader "Unlit/ProjectorShader"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
+            #pragma shader_feature _SelectNumber
 
             #include "UnityCG.cginc"
 
@@ -37,6 +36,7 @@ Shader "Unlit/ProjectorShader"
             };
 
             sampler2D _MainTex;
+            sampler2D _SelectTex;
             fixed4 _Color;
 
             float4 _MainTex_ST;
@@ -57,10 +57,21 @@ Shader "Unlit/ProjectorShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.texc);
+                fixed4 col = tex2D(_MainTex, i.texc.xy);
                 col = col * step(0, i.texc.w);
                 col.rgb = _Color.rgb;
-                //col = _Color;
+
+#if _SelectNumber
+                if(i.texc.x >= 0.5 && i.texc.y >= 0.5) 
+                {
+                    float2 xy;
+                    xy.x = (i.texc.x - 0.5) / 0.5f;
+                    xy.y = (i.texc.y - 0.5) / 0.5f;
+                    fixed4 loc = tex2D(_SelectTex, xy);
+                    //loc.rgb = _Color.rgb;
+                    col.rgba = (loc.a == 0 ? col.rgba : loc.rgba);
+                }
+#endif                 
                 return col;
             }
             ENDCG

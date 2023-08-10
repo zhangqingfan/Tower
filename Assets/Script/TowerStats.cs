@@ -84,7 +84,7 @@ public class TowerStats : MonoBehaviour
                 break;
 
          case TowerStatsType.TargetsNum:
-                if (value < 1)
+                if (value < GameManager.instance.selectNumList.Count - 1)
                 {
                     statsUpGrade[(int)type] += 1;
                     stats[(int)type] += 1;

@@ -80,19 +80,19 @@ public class EnemyCtrl : MonoBehaviour
             yield return delay;
 
             var tower = GameManager.instance.GetTower(targetTowerIndex);
+            
             if (tower == null)  
             {
                 targetTowerIndex = -1;
-                var destPos = transform.position;
-
                 tower = GameManager.instance.GetRandomTower();
-                if(tower != null)
-                {
-                    targetTowerIndex = tower.ID;
-                    destPos = tower.transform.position;
-                }
+            }
 
-                agent.SetDestination(destPos);
+            agent.SetDestination(transform.position);
+
+            if (tower != null)
+            {
+                targetTowerIndex = tower.ID;
+                agent.SetDestination(tower.transform.position);
             }
         }
     }
@@ -111,6 +111,18 @@ public class EnemyCtrl : MonoBehaviour
     private void OnDisable()
     {
         GameManager.instance.RemoveEnemy(enemyID);
+        GameManager.instance.RemoveTowersTargetingEnemy(enemyID);
+
+        if (projector.enabled == true)
+        {
+            var tower = GameManager.instance.GetTower(GameManager.instance.currentSelectTowerIndex);
+            if(tower != null)
+            {
+                tower.UnProjectSelectWheel();
+                tower.ProjectSelectWheel();
+            }
+        }
+
         targetTowerIndex = -1;
         enemyID = -1;
         projector.enabled = false;
@@ -121,7 +133,6 @@ public class EnemyCtrl : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Tower"))
         {
-            //Debug.Log("tower!");
             var towerCtrl = other.gameObject.GetComponent<TowerCtrl>();
             towerCtrl.ChangeHP(-5);
                         
