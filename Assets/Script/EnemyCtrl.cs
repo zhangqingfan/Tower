@@ -110,19 +110,6 @@ public class EnemyCtrl : MonoBehaviour
 
     private void OnDisable()
     {
-        GameManager.instance.RemoveEnemy(enemyID);
-        GameManager.instance.RemoveTowersTargetingEnemy(enemyID);
-
-        if (projector.enabled == true)
-        {
-            var tower = GameManager.instance.GetTower(GameManager.instance.currentSelectTowerIndex);
-            if(tower != null)
-            {
-                tower.UnProjectSelectWheel();
-                tower.ProjectSelectWheel();
-            }
-        }
-
         targetTowerIndex = -1;
         enemyID = -1;
         projector.enabled = false;
@@ -135,8 +122,20 @@ public class EnemyCtrl : MonoBehaviour
         {
             var towerCtrl = other.gameObject.GetComponent<TowerCtrl>();
             towerCtrl.ChangeHP(-5);
-                        
-            //GameManager.instance.RemoveEnemy(enemyID);
+
+            GameManager.instance.RemoveEnemy(enemyID);
+            GameManager.instance.RemoveTowersTargetingEnemy(enemyID);
+
+            if (projector.enabled == true)
+            {
+                var tower = GameManager.instance.GetTower(GameManager.instance.currentSelectTowerIndex);
+                if (tower != null)
+                {
+                    tower.UnProjectSelectWheel();
+                    tower.ProjectSelectWheel();
+                }
+            }
+
             StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject));
         }
     }
@@ -147,7 +146,22 @@ public class EnemyCtrl : MonoBehaviour
         currentHp = (currentHp >= 0 ? currentHp : 0);
 
         if (currentHp <= 0)
+        {
+            GameManager.instance.RemoveEnemy(enemyID);
+            GameManager.instance.RemoveTowersTargetingEnemy(enemyID);
+
+            if (projector.enabled == true)
+            {
+                var tower = GameManager.instance.GetTower(GameManager.instance.currentSelectTowerIndex);
+                if (tower != null)
+                {
+                    tower.UnProjectSelectWheel();
+                    tower.ProjectSelectWheel();
+                }
+            }
+
             StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject));
+        }
     }
 
     public void TryWrap(Vector3 pos)

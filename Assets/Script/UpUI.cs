@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UpUI : UICtrl
@@ -15,10 +16,12 @@ public class UpUI : UICtrl
         elemDict["EndText"].SetActive(false);
         elemDict["CountDown"].SetActive(false);
         elemDict["FreezeTime"].SetActive(false);
+        elemDict["Restart"].SetActive(false);
 
         AddButtonListener("SceneSkill/SkillButton0", () => ButtonFunction(0));
         AddButtonListener("SceneSkill/SkillButton1", () => ButtonFunction(1));
         AddButtonListener("SceneSkill/SkillButton2", () => ButtonFunction(2));
+        AddButtonListener("Restart", RestartGame);
     }
 
     public void ShowEnd(bool isWin)
@@ -26,6 +29,8 @@ public class UpUI : UICtrl
         elemDict["EndText"].SetActive(true);
         var str = (isWin == true ? "Win" : "Lose");
         ChangeText("EndText", str);
+
+        elemDict["Restart"].SetActive(true);
     }
 
     public void ShowCountDown(int time, bool isShow)
@@ -75,6 +80,11 @@ public class UpUI : UICtrl
             StartCoroutine(StartCoolDown(image, 3f));
             return;
         }
+    }
+
+    void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public IEnumerator ChangeEnemySpeed()

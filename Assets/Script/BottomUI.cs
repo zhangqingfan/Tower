@@ -23,12 +23,14 @@ public class BottomUI : UICtrl
         ChangeText("PanelUpgrade/Text (2)", "0");
         ChangeText("PanelUpgrade/Text (3)", "0");
         ChangeText("PanelUpgrade/Text (4)", "0");
+        ChangeText("PanelUpgrade/Text (5)", "0");
 
         AddButtonListener("PanelUpgrade/Button", () => UpgradeStats(TowerStatsType.CD));
         AddButtonListener("PanelUpgrade/Button (1)", () => UpgradeStats(TowerStatsType.RotationSpeed));
         AddButtonListener("PanelUpgrade/Button (2)", () => UpgradeStats(TowerStatsType.MaxHealth));
         AddButtonListener("PanelUpgrade/Button (3)", () => UpgradeStats(TowerStatsType.FireRange));
         AddButtonListener("PanelUpgrade/Button (4)", () => UpgradeStats(TowerStatsType.TargetsNum));
+        AddButtonListener("PanelUpgrade/Button (5)", () => UpgradeStats(TowerStatsType.Splash));
 
         elemDict["PanelUpgrade"].SetActive(false);
 
@@ -61,6 +63,7 @@ public class BottomUI : UICtrl
         ChangeText("PanelUpgrade/Text (2)", tower.stats.GetUpgradeValue(TowerStatsType.MaxHealth).ToString());
         ChangeText("PanelUpgrade/Text (3)", tower.stats.GetUpgradeValue(TowerStatsType.FireRange).ToString());
         ChangeText("PanelUpgrade/Text (4)", tower.stats.GetUpgradeValue(TowerStatsType.TargetsNum).ToString());
+        ChangeText("PanelUpgrade/Text (5)", tower.stats.GetUpgradeValue(TowerStatsType.Splash).ToString());
     }
 
     void UpgradeStats(TowerStatsType type)

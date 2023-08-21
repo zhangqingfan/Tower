@@ -253,40 +253,11 @@ public class TowerCtrl : MonoBehaviour
 
                 var bullet = GameManager.instance.GetInstance("Prefab/Bullet", bulletStartPos.transform.position);
                 bullet.GetComponent<MeshRenderer>().material.color = selfColor;
+                bullet.GetComponent<BulletCtrl>().isSplash = stats.GetUpgradeValue(TowerStatsType.Splash) > 0 ? true : false;
                 bullet.transform.rotation = Quaternion.LookRotation(dir);
                 bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 1.0f;
-                StartCoroutine(GameManager.instance.RealseObj("Prefab/Bullet", bullet, 5.0f));
+                GameManager.instance.StartCoroutine(GameManager.instance.RealseObj("Prefab/Bullet", bullet, 5.0f));
             }
         }
-}
-
-    //增加色彩 X
-    //测试出生逻辑 X
-    //测试距离 1.6f X
-    //炮塔瞄准逻辑 X
-    //增加炮弹逻辑 X
-    //增加炮塔属性 X
-    //增加炮弹接触逻辑 X
-    //增加炮弹自毁逻辑 X
-    //增加出怪点逻辑 X
-    //增加怪物字典逻辑 X
-    //增加navemesh X
-    //增加投影选择栏 X
-    //增加NPC瞄准投影 X
-    //增加dodge类型的NPC X
-    //增加闪避AI X
-    //增加锁定NPC功能 X
-    //修改摄像机和屏幕长宽 X
-    //增加UI栏属性对应 X
-    //增加怪物属性 X
-    //增加速度怪物 X
-    //增加繁殖AI 
-    //增加繁殖NPC
-    //增加属性升级面板 
-    //增加胜负条件 X
-    //增加怪物波次概念 X
-    //增加塔死亡逻辑 X
-    //增加怪物死亡逻辑
-    //调整数值
-    //增加全屏幕大招
+    }
 }

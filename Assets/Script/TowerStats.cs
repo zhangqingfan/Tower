@@ -12,14 +12,15 @@ public enum TowerStatsType
     SplatterDamage,
     TargetsNum,
     MaxHealth,
+    Splash,
     TypeMax
 }
 
 
 public class TowerStats : MonoBehaviour
 {
-    public float[] stats = new float[(int)TowerStatsType.TypeMax] { 1f, 1f, 20f, 5.0f, 1.6f, 1f, 1f, 5.0f };
-    public int[] statsUpGrade = new int[(int)TowerStatsType.TypeMax] { 0, 0, 0, 0, 0, 0, 0, 0 };
+    private float[] stats = new float[(int)TowerStatsType.TypeMax] { 1f, 1f, 20f, 5.0f, 1.6f, 1f, 1f, 5.0f, 0f };
+    private int[] statsUpGrade = new int[(int)TowerStatsType.TypeMax] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     public void SetValue(TowerStatsType type, float value)
     {
@@ -88,6 +89,13 @@ public class TowerStats : MonoBehaviour
                 {
                     statsUpGrade[(int)type] += 1;
                     stats[(int)type] += 1;
+                }
+                break;
+
+        case TowerStatsType.Splash:
+                if (value < 1)
+                {
+                    statsUpGrade[(int)type] += 1;
                 }
                 break;
         }

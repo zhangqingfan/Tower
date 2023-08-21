@@ -148,6 +148,9 @@ public class GameManager : MonoBehaviour
             if (currentWave >= waveData.waveInfo.Count)
                 yield break;
 
+            if(IsAllTowerDestory() == true)
+                yield break;
+
             yield return delay;
             yield return delay;
 
@@ -340,7 +343,7 @@ public class GameManager : MonoBehaviour
         if (gameObjPool[path].Count == 0)
         {
             var a = Resources.Load<GameObject>(path);
-            var b = GameObject.Instantiate(a);
+            var b = GameObject.Instantiate(a, pos, Quaternion.identity);
             gameObjPool[path].Add(b);
         }
 
