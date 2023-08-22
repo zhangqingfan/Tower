@@ -149,6 +149,8 @@ public class EnemyCtrl : MonoBehaviour
         {
             GameManager.instance.RemoveEnemy(enemyID);
             GameManager.instance.RemoveTowersTargetingEnemy(enemyID);
+            GameManager.instance.gold += 10;
+            UICtrl.uiDict["UpUI"].ChangeText("Gold", "Gold: " + GameManager.instance.gold);
 
             if (projector.enabled == true)
             {
@@ -160,7 +162,7 @@ public class EnemyCtrl : MonoBehaviour
                 }
             }
 
-            StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject));
+            GameManager.instance.StartCoroutine(GameManager.instance.RealseObj(enemyName, gameObject));
         }
     }
 

@@ -3903,6 +3903,7 @@ MonoBehaviour:
   selectNumList: []
   currentSelectTowerIndex: -1
   waveData: {fileID: 11400000, guid: 39a91cab88046dc4384609e81d691e76, type: 2}
+  gold: 0
 --- !u!1 &1463437508
 GameObject:
   m_ObjectHideFlags: 0

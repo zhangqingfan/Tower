@@ -12,7 +12,7 @@ public class UpUI : UICtrl
         base.Awake();
         uiDict["UpUI"] = this;
 
-        ChangeText("Gold", "Gold: ");
+        ChangeText("Gold", "Gold: 0");
         elemDict["EndText"].SetActive(false);
         elemDict["CountDown"].SetActive(false);
         elemDict["FreezeTime"].SetActive(false);

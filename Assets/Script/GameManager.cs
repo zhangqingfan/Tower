@@ -35,12 +35,13 @@ public class GameManager : MonoBehaviour
     public EnemyWaveData waveData;
 
     private int currentWave = 0;
-    Coroutine countDownCoroutine;
+    public int gold = 0;
 
     private void Awake()
     {
         instance = this;
-        
+        gold = 0;
+
         selectNumList.Add(Resources.Load<Sprite>("Material/Select1"));
         selectNumList.Add(Resources.Load<Sprite>("Material/Select2"));
     }
