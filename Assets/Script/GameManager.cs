@@ -182,6 +182,7 @@ public class GameManager : MonoBehaviour
             var enemyCtrl = enemyCtrlList[i].GetComponent<EnemyCtrl>();
             StartCoroutine(RealseObj(enemyCtrl.enemyName, enemyCtrlList[i]));
         }
+        enemyDict.Clear();
     }
 
     public GameObject GetEnemy(int id)
